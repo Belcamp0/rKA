@@ -1,0 +1,1124 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>rKA Planning Tool - Vendittoli Technique</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            color: #333;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .header {
+            text-align: center;
+            color: white;
+            margin-bottom: 30px;
+        }
+
+        .header h1 {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+
+        .header p {
+            font-size: 1.1rem;
+            opacity: 0.9;
+        }
+
+        .main-content {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+            margin-bottom: 30px;
+        }
+
+        .card {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 15px;
+            padding: 25px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .card h2 {
+            color: #4a5568;
+            margin-bottom: 20px;
+            font-size: 1.5rem;
+            border-bottom: 2px solid #667eea;
+            padding-bottom: 10px;
+        }
+
+        .input-group {
+            margin-bottom: 20px;
+        }
+
+        .input-group label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: 600;
+            color: #2d3748;
+        }
+
+        .input-group input, .input-group select {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #e2e8f0;
+            border-radius: 8px;
+            font-size: 1rem;
+            transition: border-color 0.3s ease;
+        }
+
+        .input-group input:focus, .input-group select:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        .btn {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            border-radius: 8px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+            width: 100%;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(102, 126, 234, 0.3);
+        }
+
+        .results-section {
+            grid-column: 1 / -1;
+            margin-top: 20px;
+        }
+
+        .results-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+            margin-top: 20px;
+        }
+
+        .result-card {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 10px;
+            padding: 20px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .result-card h3 {
+            color: #2d3748;
+            margin-bottom: 15px;
+            font-size: 1.3rem;
+        }
+
+        .result-item {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 10px;
+            padding: 8px 0;
+            border-bottom: 1px solid #e2e8f0;
+        }
+
+        .result-item:last-child {
+            border-bottom: none;
+        }
+
+        .result-value {
+            font-weight: 600;
+            color: #667eea;
+        }
+
+        .warning {
+            background: #fed7d7;
+            color: #c53030;
+            padding: 15px;
+            border-radius: 8px;
+            margin: 10px 0;
+            border-left: 4px solid #e53e3e;
+        }
+
+        .success {
+            background: #c6f6d5;
+            color: #2f855a;
+            padding: 15px;
+            border-radius: 8px;
+            margin: 10px 0;
+            border-left: 4px solid #38a169;
+        }
+
+        .cpak-matrix {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 10px;
+            margin-top: 15px;
+        }
+
+        .cpak-cell {
+            padding: 10px;
+            text-align: center;
+            border: 2px solid #e2e8f0;
+            border-radius: 5px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+
+        .cpak-cell.active {
+            background: #667eea;
+            color: white;
+            border-color: #667eea;
+            transform: scale(1.05);
+        }
+
+        .technique-info {
+            background: #f7fafc;
+            padding: 20px;
+            border-radius: 10px;
+            margin-top: 20px;
+            border-left: 4px solid #4299e1;
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        .angle-selector {
+            margin-bottom: 20px;
+        }
+
+        .angle-selector label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: 600;
+            color: #2d3748;
+        }
+
+        .angle-selector select {
+            width: 100%;
+            padding: 10px;
+            border: 2px solid #e2e8f0;
+            border-radius: 8px;
+            font-size: 1rem;
+        }
+
+        .knee-diagram-container {
+            background: #f8f9fa;
+            border-radius: 10px;
+            padding: 20px;
+            margin: 20px 0;
+            box-shadow: inset 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .angle-legend {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 10px;
+            margin-top: 15px;
+        }
+
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 8px;
+            background: #f7fafc;
+            border-radius: 5px;
+            font-size: 0.9rem;
+        }
+
+        .legend-color {
+            width: 20px;
+            height: 3px;
+            border-radius: 2px;
+        }
+
+        #kneeDiagram {
+            transition: all 0.3s ease;
+        }
+
+        .angle-highlight {
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0% { opacity: 0.6; }
+            50% { opacity: 1; }
+            100% { opacity: 0.6; }
+        }
+
+        @keyframes drawLine {
+            0% { stroke-dasharray: 0, 1000; }
+            100% { stroke-dasharray: 1000, 0; }
+        }
+
+        @keyframes drawArc {
+            0% { stroke-dasharray: 0, 200; }
+            100% { stroke-dasharray: 200, 0; }
+        }
+
+        @keyframes fadeInScale {
+            0% { 
+                opacity: 0; 
+                transform: scale(0.8);
+            }
+            100% { 
+                opacity: 1; 
+                transform: scale(1);
+            }
+        }
+
+        @keyframes rotateIn {
+            0% { 
+                opacity: 0; 
+                transform: rotate(-10deg);
+            }
+            100% { 
+                opacity: 1; 
+                transform: rotate(0deg);
+            }
+        }
+
+        @keyframes slideIn {
+            0% { 
+                opacity: 0; 
+                transform: translateX(-20px);
+            }
+            100% { 
+                opacity: 1; 
+                transform: translateX(0);
+            }
+        }
+
+        .line-animate {
+            animation: drawLine 1.5s ease-out forwards;
+        }
+
+        .arc-animate {
+            animation: drawArc 1.2s ease-out forwards;
+        }
+
+        .fade-animate {
+            animation: fadeInScale 0.8s ease-out forwards;
+        }
+
+        .rotate-animate {
+            animation: rotateIn 1s ease-out forwards;
+        }
+
+        .slide-animate {
+            animation: slideIn 0.6s ease-out forwards;
+        }
+
+        @media (max-width: 768px) {
+            .main-content {
+                grid-template-columns: 1fr;
+            }
+            
+            .header h1 {
+                font-size: 2rem;
+            }
+
+            .angle-legend {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🦴 Restricted Kinematic Alignment Planning Tool</h1>
+            <p>Vendittoli Technique with CPAK Classification Integration</p>
+        </div>
+
+        <div class="main-content">
+            <div class="card">
+                <h2>📊 Patient Data & Measurements</h2>
+                
+                <div class="input-group">
+                    <label for="patientAge">Patient Age (years)</label>
+                    <input type="number" id="patientAge" min="30" max="100" placeholder="65">
+                </div>
+
+                <div class="input-group">
+                    <label for="patientSex">Patient Sex</label>
+                    <select id="patientSex">
+                        <option value="">Select...</option>
+                        <option value="male">Male</option>
+                        <option value="female">Female</option>
+                    </select>
+                </div>
+
+                <div class="input-group">
+                    <label for="hka">Hip-Knee-Ankle Angle (HKA) - degrees</label>
+                    <input type="number" id="hka" step="0.1" placeholder="0.0" min="-15" max="15">
+                    <small style="color: #666; font-size: 0.9rem;">Negative = Varus, Positive = Valgus</small>
+                </div>
+
+                <div class="input-group">
+                    <label for="jlo">Joint Line Obliquity (JLO) - degrees</label>
+                    <input type="number" id="jlo" step="0.1" placeholder="0.0" min="-10" max="10">
+                    <small style="color: #666; font-size: 0.9rem;">Apex distal = Positive</small>
+                </div>
+
+                <div class="input-group">
+                    <label for="ldfa">Lateral Distal Femoral Angle (LDFA) - degrees</label>
+                    <input type="number" id="ldfa" step="0.1" placeholder="87.0" min="80" max="95">
+                </div>
+
+                <div class="input-group">
+                    <label for="mpta">Medial Proximal Tibial Angle (MPTA) - degrees</label>
+                    <input type="number" id="mpta" step="0.1" placeholder="87.0" min="80" max="95">
+                </div>
+
+                <div class="input-group">
+                    <label for="kneeSize">Knee Size</label>
+                    <select id="kneeSize">
+                        <option value="">Select...</option>
+                        <option value="small">Small</option>
+                        <option value="medium">Medium</option>
+                        <option value="large">Large</option>
+                        <option value="xlarge">X-Large</option>
+                    </select>
+                </div>
+
+                <button class="btn" onclick="calculateRKA()">🔬 Calculate rKA Parameters</button>
+            </div>
+
+            <div class="card">
+                <h2>📋 CPAK Classification</h2>
+                <p style="margin-bottom: 15px; color: #666;">Classification based on arithmetic HKA and JLO values</p>
+                
+                <div class="cpak-matrix">
+                    <div class="cpak-cell" data-type="I">Type I</div>
+                    <div class="cpak-cell" data-type="II">Type II</div>
+                    <div class="cpak-cell" data-type="III">Type III</div>
+                    <div class="cpak-cell" data-type="IV">Type IV</div>
+                    <div class="cpak-cell" data-type="V">Type V</div>
+                    <div class="cpak-cell" data-type="VI">Type VI</div>
+                    <div class="cpak-cell" data-type="VII">Type VII</div>
+                    <div class="cpak-cell" data-type="VIII">Type VIII</div>
+                    <div class="cpak-cell" data-type="IX">Type IX</div>
+                </div>
+
+                <div id="cpakDescription" class="technique-info hidden">
+                    <h4>CPAK Type: <span id="cpakType"></span></h4>
+                    <p id="cpakDetails"></p>
+                    <p id="cpakRecommendation"></p>
+                </div>
+
+                <div class="technique-info">
+                    <h4>🎯 Vendittoli rKA Principles</h4>
+                    <ul style="margin-left: 20px; margin-top: 10px;">
+                        <li>HKA within ±3° of neutral</li>
+                        <li>LDFA and MPTA limited to ±5° from neutral</li>
+                        <li>Preserve collateral ligament balance</li>
+                        <li>Respect joint line orientation</li>
+                        <li>Minimize bone resection when possible</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="card">
+                <h2>🦴 Knee Anatomy & Angle Visualization</h2>
+                <div class="angle-selector">
+                    <label>Select angle to highlight:</label>
+                    <select id="angleSelector" onchange="highlightAngle()">
+                        <option value="none">None</option>
+                        <option value="hka">HKA - Hip-Knee-Ankle Angle</option>
+                        <option value="jlo">JLO - Joint Line Obliquity</option>
+                        <option value="ldfa">LDFA - Lateral Distal Femoral Angle</option>
+                        <option value="mpta">MPTA - Medial Proximal Tibial Angle</option>
+                    </select>
+                </div>
+
+                <div class="knee-diagram-container">
+                    <svg id="kneeDiagram" viewBox="0 0 400 600" style="width: 100%; max-width: 400px; margin: 20px auto; display: block;">
+                        <!-- Hip point -->
+                        <circle cx="200" cy="50" r="8" fill="#8B5CF6" id="hipPoint">
+                            <animate attributeName="r" values="8;10;8" dur="2s" repeatCount="indefinite" begin="0s"/>
+                        </circle>
+                        <text x="220" y="55" font-size="12" fill="#4a5568">Hip</text>
+                        
+                        <!-- Femur -->
+                        <line x1="200" y1="50" x2="195" y2="250" stroke="#4a5568" stroke-width="12" id="femur"/>
+                        
+                        <!-- Knee joint -->
+                        <circle cx="195" cy="250" r="15" fill="#667eea" id="kneePoint">
+                            <animate attributeName="r" values="15;17;15" dur="2s" repeatCount="indefinite" begin="0.5s"/>
+                        </circle>
+                        <text x="215" y="255" font-size="12" fill="#4a5568">Knee</text>
+                        
+                        <!-- Tibia -->
+                        <line x1="195" y1="250" x2="190" y2="450" stroke="#4a5568" stroke-width="12" id="tibia"/>
+                        
+                        <!-- Ankle point -->
+                        <circle cx="190" cy="450" r="8" fill="#8B5CF6" id="anklePoint">
+                            <animate attributeName="r" values="8;10;8" dur="2s" repeatCount="indefinite" begin="1s"/>
+                        </circle>
+                        <text x="210" y="455" font-size="12" fill="#4a5568">Ankle</text>
+                        
+                        <!-- Mechanical axis line (HKA) -->
+                        <line x1="200" y1="50" x2="190" y2="450" stroke="#e53e3e" stroke-width="2" stroke-dasharray="5,5" id="hkaLine" opacity="0"/>
+                        
+                        <!-- Femoral anatomical axis -->
+                        <line x1="200" y1="120" x2="195" y2="250" stroke="#38a169" stroke-width="2" id="femoralAxis" opacity="0"/>
+                        
+                        <!-- Tibial anatomical axis -->
+                        <line x1="195" y1="250" x2="190" y2="380" stroke="#3182ce" stroke-width="2" id="tibialAxis" opacity="0"/>
+                        
+                        <!-- Joint line -->
+                        <line x1="170" y1="250" x2="220" y2="250" stroke="#805ad5" stroke-width="3" id="jointLine" opacity="0"/>
+                        
+                        <!-- Reference lines for angles -->
+                        <!-- Vertical reference -->
+                        <line x1="195" y1="200" x2="195" y2="300" stroke="#gray" stroke-width="1" stroke-dasharray="2,2" id="verticalRef" opacity="0"/>
+                        
+                        <!-- Horizontal reference -->
+                        <line x1="145" y1="250" x2="245" y2="250" stroke="#gray" stroke-width="1" stroke-dasharray="2,2" id="horizontalRef" opacity="0"/>
+                        
+                        <!-- LDFA angle arc -->
+                        <path d="M 195 230 A 20 20 0 0 1 210 240" stroke="#f56565" stroke-width="2" fill="none" id="ldfaArc" opacity="0"/>
+                        <text x="215" y="235" font-size="10" fill="#f56565" id="ldfaLabel" opacity="0">LDFA</text>
+                        
+                        <!-- MPTA angle arc -->
+                        <path d="M 195 270 A 20 20 0 0 0 210 280" stroke="#4299e1" stroke-width="2" fill="none" id="mptaArc" opacity="0"/>
+                        <text x="215" y="285" font-size="10" fill="#4299e1" id="mptaLabel" opacity="0">MPTA</text>
+                        
+                        <!-- JLO angle indicator -->
+                        <path d="M 170 240 A 30 30 0 0 1 220 240" stroke="#805ad5" stroke-width="2" fill="none" id="jloArc" opacity="0"/>
+                        <text x="195" y="225" font-size="10" fill="#805ad5" text-anchor="middle" id="jloLabel" opacity="0">JLO</text>
+                        
+                        <!-- HKA angle indicator -->
+                        <path d="M 195 100 A 50 50 0 0 1 185 140" stroke="#e53e3e" stroke-width="2" fill="none" id="hkaArc" opacity="0"/>
+                        <text x="150" y="125" font-size="10" fill="#e53e3e" id="hkaLabel" opacity="0">HKA</text>
+                        
+                        <!-- Angle values display -->
+                        <rect x="10" y="500" width="380" height="90" fill="rgba(255,255,255,0.9)" stroke="#e2e8f0" stroke-width="1" rx="5" id="angleInfo" opacity="0"/>
+                        <text x="20" y="520" font-size="14" font-weight="bold" fill="#4a5568" id="angleTitle">Angle Information</text>
+                        <text x="20" y="540" font-size="12" fill="#666" id="angleDescription">Select an angle above to see details</text>
+                        <text x="20" y="560" font-size="12" fill="#666" id="angleValue">Current value: --</text>
+                        <text x="20" y="580" font-size="12" fill="#666" id="angleNormal">Normal range: --</text>
+                        
+                        <!-- Animated measurement indicators -->
+                        <circle cx="200" cy="50" r="20" fill="none" stroke="#8B5CF6" stroke-width="1" opacity="0.3" id="hipRing">
+                            <animate attributeName="r" values="20;25;20" dur="3s" repeatCount="indefinite"/>
+                            <animate attributeName="opacity" values="0.3;0.1;0.3" dur="3s" repeatCount="indefinite"/>
+                        </circle>
+                        
+                        <circle cx="195" cy="250" r="25" fill="none" stroke="#667eea" stroke-width="1" opacity="0.3" id="kneeRing">
+                            <animate attributeName="r" values="25;30;25" dur="3s" repeatCount="indefinite" begin="1s"/>
+                            <animate attributeName="opacity" values="0.3;0.1;0.3" dur="3s" repeatCount="indefinite" begin="1s"/>
+                        </circle>
+                        
+                        <circle cx="190" cy="450" r="20" fill="none" stroke="#8B5CF6" stroke-width="1" opacity="0.3" id="ankleRing">
+                            <animate attributeName="r" values="20;25;20" dur="3s" repeatCount="indefinite" begin="2s"/>
+                            <animate attributeName="opacity" values="0.3;0.1;0.3" dur="3s" repeatCount="indefinite" begin="2s"/>
+                        </circle>
+                    </svg>
+                </div>
+
+                <div class="angle-legend">
+                    <div class="legend-item">
+                        <div class="legend-color" style="background-color: #e53e3e;"></div>
+                        <span>HKA - Hip-Knee-Ankle Angle</span>
+                    </div>
+                    <div class="legend-item">
+                        <div class="legend-color" style="background-color: #805ad5;"></div>
+                        <span>JLO - Joint Line Obliquity</span>
+                    </div>
+                    <div class="legend-item">
+                        <div class="legend-color" style="background-color: #f56565;"></div>
+                        <span>LDFA - Lateral Distal Femoral Angle</span>
+                    </div>
+                    <div class="legend-item">
+                        <div class="legend-color" style="background-color: #4299e1;"></div>
+                        <span>MPTA - Medial Proximal Tibial Angle</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="results-section card hidden" id="resultsSection">
+            <h2>📈 rKA Planning Results</h2>
+            <div class="results-grid">
+                <div class="result-card">
+                    <h3>🎯 Target Alignment</h3>
+                    <div class="result-item">
+                        <span>Target HKA:</span>
+                        <span class="result-value" id="targetHKA">-</span>
+                    </div>
+                    <div class="result-item">
+                        <span>Target LDFA:</span>
+                        <span class="result-value" id="targetLDFA">-</span>
+                    </div>
+                    <div class="result-item">
+                        <span>Target MPTA:</span>
+                        <span class="result-value" id="targetMPTA">-</span>
+                    </div>
+                    <div class="result-item">
+                        <span>rKA Feasibility:</span>
+                        <span class="result-value" id="rkaFeasibility">-</span>
+                    </div>
+                </div>
+
+                <div class="result-card">
+                    <h3>🔧 Surgical Parameters</h3>
+                    <div class="result-item">
+                        <span>Femoral Cut Angle:</span>
+                        <span class="result-value" id="femoralCut">-</span>
+                    </div>
+                    <div class="result-item">
+                        <span>Tibial Cut Angle:</span>
+                        <span class="result-value" id="tibialCut">-</span>
+                    </div>
+                    <div class="result-item">
+                        <span>Estimated Bone Resection:</span>
+                        <span class="result-value" id="boneResection">-</span>
+                    </div>
+                    <div class="result-item">
+                        <span>Ligament Release Risk:</span>
+                        <span class="result-value" id="ligamentRisk">-</span>
+                    </div>
+                </div>
+
+                <div class="result-card">
+                    <h3>⚠️ Clinical Considerations</h3>
+                    <div id="clinicalWarnings"></div>
+                    <div id="clinicalRecommendations"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // CPAK Classification Data
+        const cpakTypes = {
+            I: { name: "Type I", description: "Neutral alignment with neutral JLO", recommendation: "Excellent candidate for rKA" },
+            II: { name: "Type II", description: "Neutral alignment with valgus JLO", recommendation: "Good candidate for rKA with attention to lateral structures" },
+            III: { name: "Type III", description: "Neutral alignment with varus JLO", recommendation: "Good candidate for rKA with attention to medial structures" },
+            IV: { name: "Type IV", description: "Valgus alignment with neutral JLO", recommendation: "Consider rKA with careful limb alignment monitoring" },
+            V: { name: "Type V", description: "Valgus alignment with valgus JLO", recommendation: "May benefit from rKA but requires careful planning" },
+            VI: { name: "Type VI", description: "Valgus alignment with varus JLO", recommendation: "Complex case - consider hybrid approach" },
+            VII: { name: "Type VII", description: "Varus alignment with neutral JLO", recommendation: "Consider rKA with careful limb alignment monitoring" },
+            VIII: { name: "Type VIII", description: "Varus alignment with valgus JLO", recommendation: "Complex case - consider hybrid approach" },
+            IX: { name: "Type IX", description: "Varus alignment with varus JLO", recommendation: "May benefit from rKA but requires careful planning" }
+        };
+
+        // Angle information for visualization
+        const angleInfo = {
+            hka: {
+                title: "Hip-Knee-Ankle Angle (HKA)",
+                description: "Mechanical axis angle measuring overall limb alignment",
+                normal: "0° ± 3° (neutral alignment)",
+                color: "#e53e3e"
+            },
+            jlo: {
+                title: "Joint Line Obliquity (JLO)",
+                description: "Angle between joint line and horizontal reference",
+                normal: "0° ± 3° (horizontal joint line)",
+                color: "#805ad5"
+            },
+            ldfa: {
+                title: "Lateral Distal Femoral Angle (LDFA)",
+                description: "Angle between femoral anatomical axis and joint line",
+                normal: "87° ± 2° (typical range 85-89°)",
+                color: "#f56565"
+            },
+            mpta: {
+                title: "Medial Proximal Tibial Angle (MPTA)",
+                description: "Angle between tibial anatomical axis and joint line",
+                normal: "87° ± 2° (typical range 85-89°)",
+                color: "#4299e1"
+            }
+        };
+
+        function highlightAngle() {
+            const selectedAngle = document.getElementById('angleSelector').value;
+            
+            // Reset all elements
+            const elements = ['hkaLine', 'hkaArc', 'hkaLabel', 'jointLine', 'jloArc', 'jloLabel', 
+                            'ldfaArc', 'ldfaLabel', 'mptaArc', 'mptaLabel', 'femoralAxis', 
+                            'tibialAxis', 'verticalRef', 'horizontalRef', 'angleInfo'];
+            
+            elements.forEach(id => {
+                const element = document.getElementById(id);
+                if (element) {
+                    element.style.opacity = '0';
+                    element.classList.remove('angle-highlight', 'line-animate', 'arc-animate', 'fade-animate', 'rotate-animate', 'slide-animate');
+                    // Reset stroke-dasharray for clean animation restart
+                    if (element.tagName === 'line' || element.tagName === 'path') {
+                        element.style.strokeDasharray = '';
+                    }
+                }
+            });
+
+            if (selectedAngle === 'none') return;
+
+            // Show angle info box with animation
+            const angleInfoBox = document.getElementById('angleInfo');
+            angleInfoBox.style.opacity = '1';
+            angleInfoBox.classList.add('fade-animate');
+
+            // Get current values from inputs
+            const hkaValue = document.getElementById('hka').value || '0';
+            const jloValue = document.getElementById('jlo').value || '0';
+            const ldfaValue = document.getElementById('ldfa').value || '87';
+            const mptaValue = document.getElementById('mpta').value || '87';
+
+            const values = { hka: hkaValue, jlo: jloValue, ldfa: ldfaValue, mpta: mptaValue };
+
+            // Update info display with staggered animations
+            setTimeout(() => {
+                const info = angleInfo[selectedAngle];
+                document.getElementById('angleTitle').textContent = info.title;
+                document.getElementById('angleDescription').textContent = info.description;
+                document.getElementById('angleValue').textContent = `Current value: ${values[selectedAngle]}°`;
+                document.getElementById('angleNormal').textContent = `Normal range: ${info.normal}`;
+            }, 200);
+
+            // Animate specific angle elements with timing delays
+            switch(selectedAngle) {
+                case 'hka':
+                    setTimeout(() => {
+                        const hkaLine = document.getElementById('hkaLine');
+                        hkaLine.style.opacity = '1';
+                        hkaLine.classList.add('line-animate');
+                    }, 300);
+                    
+                    setTimeout(() => {
+                        const hkaArc = document.getElementById('hkaArc');
+                        hkaArc.style.opacity = '1';
+                        hkaArc.classList.add('arc-animate');
+                    }, 800);
+                    
+                    setTimeout(() => {
+                        const hkaLabel = document.getElementById('hkaLabel');
+                        hkaLabel.style.opacity = '1';
+                        hkaLabel.classList.add('slide-animate');
+                    }, 1200);
+                    
+                    setTimeout(() => {
+                        document.getElementById('hkaLine').classList.add('angle-highlight');
+                    }, 1500);
+                    break;
+                    
+                case 'jlo':
+                    setTimeout(() => {
+                        const horizontalRef = document.getElementById('horizontalRef');
+                        horizontalRef.style.opacity = '0.5';
+                        horizontalRef.classList.add('line-animate');
+                    }, 200);
+                    
+                    setTimeout(() => {
+                        const jointLine = document.getElementById('jointLine');
+                        jointLine.style.opacity = '1';
+                        jointLine.classList.add('line-animate');
+                    }, 500);
+                    
+                    setTimeout(() => {
+                        const jloArc = document.getElementById('jloArc');
+                        jloArc.style.opacity = '1';
+                        jloArc.classList.add('arc-animate');
+                    }, 800);
+                    
+                    setTimeout(() => {
+                        const jloLabel = document.getElementById('jloLabel');
+                        jloLabel.style.opacity = '1';
+                        jloLabel.classList.add('fade-animate');
+                    }, 1100);
+                    
+                    setTimeout(() => {
+                        document.getElementById('jointLine').classList.add('angle-highlight');
+                    }, 1400);
+                    break;
+                    
+                case 'ldfa':
+                    setTimeout(() => {
+                        const verticalRef = document.getElementById('verticalRef');
+                        verticalRef.style.opacity = '0.5';
+                        verticalRef.classList.add('line-animate');
+                    }, 200);
+                    
+                    setTimeout(() => {
+                        const femoralAxis = document.getElementById('femoralAxis');
+                        femoralAxis.style.opacity = '1';
+                        femoralAxis.classList.add('line-animate');
+                    }, 400);
+                    
+                    setTimeout(() => {
+                        const jointLine = document.getElementById('jointLine');
+                        jointLine.style.opacity = '1';
+                        jointLine.classList.add('line-animate');
+                    }, 600);
+                    
+                    setTimeout(() => {
+                        const ldfaArc = document.getElementById('ldfaArc');
+                        ldfaArc.style.opacity = '1';
+                        ldfaArc.classList.add('arc-animate');
+                    }, 900);
+                    
+                    setTimeout(() => {
+                        const ldfaLabel = document.getElementById('ldfaLabel');
+                        ldfaLabel.style.opacity = '1';
+                        ldfaLabel.classList.add('slide-animate');
+                    }, 1200);
+                    
+                    setTimeout(() => {
+                        document.getElementById('ldfaArc').classList.add('angle-highlight');
+                    }, 1500);
+                    break;
+                    
+                case 'mpta':
+                    setTimeout(() => {
+                        const verticalRef = document.getElementById('verticalRef');
+                        verticalRef.style.opacity = '0.5';
+                        verticalRef.classList.add('line-animate');
+                    }, 200);
+                    
+                    setTimeout(() => {
+                        const tibialAxis = document.getElementById('tibialAxis');
+                        tibialAxis.style.opacity = '1';
+                        tibialAxis.classList.add('line-animate');
+                    }, 400);
+                    
+                    setTimeout(() => {
+                        const jointLine = document.getElementById('jointLine');
+                        jointLine.style.opacity = '1';
+                        jointLine.classList.add('line-animate');
+                    }, 600);
+                    
+                    setTimeout(() => {
+                        const mptaArc = document.getElementById('mptaArc');
+                        mptaArc.style.opacity = '1';
+                        mptaArc.classList.add('arc-animate');
+                    }, 900);
+                    
+                    setTimeout(() => {
+                        const mptaLabel = document.getElementById('mptaLabel');
+                        mptaLabel.style.opacity = '1';
+                        mptaLabel.classList.add('slide-animate');
+                    }, 1200);
+                    
+                    setTimeout(() => {
+                        document.getElementById('mptaArc').classList.add('angle-highlight');
+                    }, 1500);
+                    break;
+            }
+
+            // Add dynamic angle value animation based on current input
+            animateAngleValue(selectedAngle, values[selectedAngle]);
+        }
+
+        function animateAngleValue(angleType, value) {
+            const numValue = parseFloat(value);
+            if (isNaN(numValue)) return;
+
+            // Create dynamic visual feedback based on angle value
+            setTimeout(() => {
+                const svg = document.getElementById('kneeDiagram');
+                
+                // Add a subtle rotation or scaling effect based on angle severity
+                const severity = Math.abs(numValue);
+                let transform = '';
+                
+                if (severity > 5) {
+                    // Significant deviation - add slight rotation
+                    const rotation = Math.min(severity * 0.5, 3);
+                    transform = `rotate(${numValue > 0 ? rotation : -rotation}deg)`;
+                } else if (severity > 2) {
+                    // Moderate deviation - add slight scale
+                    const scale = 1 + (severity * 0.01);
+                    transform = `scale(${scale})`;
+                }
+                
+                if (transform) {
+                    svg.style.transform = transform;
+                    svg.style.transformOrigin = 'center';
+                    svg.style.transition = 'transform 0.6s ease-out';
+                    
+                    // Reset after animation
+                    setTimeout(() => {
+                        svg.style.transform = '';
+                    }, 2000);
+                }
+            }, 1600);
+        }
+
+        function determineCPAKType(hka, jlo) {
+            // Classification thresholds (based on literature)
+            const hkaThreshold = 3; // degrees
+            const jloThreshold = 3; // degrees
+
+            let hkaCategory, jloCategory;
+
+            // HKA categorization
+            if (hka <= -hkaThreshold) hkaCategory = 'varus';
+            else if (hka >= hkaThreshold) hkaCategory = 'valgus';
+            else hkaCategory = 'neutral';
+
+            // JLO categorization
+            if (jlo <= -jloThreshold) jloCategory = 'varus';
+            else if (jlo >= jloThreshold) jloCategory = 'valgus';
+            else jloCategory = 'neutral';
+
+            // CPAK Type mapping
+            const typeMap = {
+                'neutral-neutral': 'I',
+                'neutral-valgus': 'II',
+                'neutral-varus': 'III',
+                'valgus-neutral': 'IV',
+                'valgus-valgus': 'V',
+                'valgus-varus': 'VI',
+                'varus-neutral': 'VII',
+                'varus-valgus': 'VIII',
+                'varus-varus': 'IX'
+            };
+
+            return typeMap[`${hkaCategory}-${jloCategory}`];
+        }
+
+        function updateCPAKDisplay(type) {
+            // Clear all active states
+            document.querySelectorAll('.cpak-cell').forEach(cell => {
+                cell.classList.remove('active');
+            });
+
+            // Activate current type
+            document.querySelector(`[data-type="${type}"]`).classList.add('active');
+
+            // Update description
+            const cpakInfo = cpakTypes[type];
+            document.getElementById('cpakType').textContent = cpakInfo.name;
+            document.getElementById('cpakDetails').textContent = cpakInfo.description;
+            document.getElementById('cpakRecommendation').textContent = cpakInfo.recommendation;
+            document.getElementById('cpakDescription').classList.remove('hidden');
+        }
+
+        function calculateRKA() {
+            // Get input values
+            const hka = parseFloat(document.getElementById('hka').value) || 0;
+            const jlo = parseFloat(document.getElementById('jlo').value) || 0;
+            const ldfa = parseFloat(document.getElementById('ldfa').value) || 87;
+            const mpta = parseFloat(document.getElementById('mpta').value) || 87;
+            const age = parseInt(document.getElementById('patientAge').value) || 65;
+            const sex = document.getElementById('patientSex').value;
+            const kneeSize = document.getElementById('kneeSize').value;
+
+            // Determine CPAK type
+            const cpakType = determineCPAKType(hka, jlo);
+            updateCPAKDisplay(cpakType);
+
+            // rKA Calculations based on Vendittoli technique
+            const results = performRKACalculations(hka, jlo, ldfa, mpta, age, sex, cpakType);
+
+            // Display results
+            displayResults(results);
+            document.getElementById('resultsSection').classList.remove('hidden');
+        }
+
+        function performRKACalculations(hka, jlo, ldfa, mpta, age, sex, cpakType) {
+            const results = {};
+
+            // rKA Target Calculations
+            // Target HKA: Restore to within ±3° of neutral
+            let targetHKA = hka;
+            if (Math.abs(hka) > 3) {
+                targetHKA = hka > 0 ? 3 : -3; // Limit to ±3°
+            }
+
+            // Target LDFA: Limit to ±5° from 87°
+            let targetLDFA = ldfa;
+            if (ldfa < 82) targetLDFA = 82;
+            if (ldfa > 92) targetLDFA = 92;
+
+            // Target MPTA: Limit to ±5° from 87°
+            let targetMPTA = mpta;
+            if (mpta < 82) targetMPTA = 82;
+            if (mpta > 92) targetMPTA = 92;
+
+            // Calculate surgical parameters
+            const femoralCutAngle = 90 - targetLDFA;
+            const tibialCutAngle = targetMPTA - 90;
+
+            // Estimate bone resection (simplified)
+            const femoralResection = Math.abs(87 - targetLDFA) * 0.5; // mm approximation
+            const tibialResection = Math.abs(87 - targetMPTA) * 0.5; // mm approximation
+
+            // rKA Feasibility Assessment
+            let feasibility = "Excellent";
+            let feasibilityScore = 100;
+
+            if (Math.abs(hka) > 6) {
+                feasibility = "Limited";
+                feasibilityScore -= 30;
+            } else if (Math.abs(hka) > 3) {
+                feasibility = "Good";
+                feasibilityScore -= 15;
+            }
+
+            if (Math.abs(jlo) > 5) {
+                feasibilityScore -= 20;
+                if (feasibility === "Excellent") feasibility = "Good";
+            }
+
+            // Ligament release risk assessment
+            let ligamentRisk = "Low";
+            if (Math.abs(hka) > 5 || Math.abs(jlo) > 4) {
+                ligamentRisk = "Moderate";
+            }
+            if (Math.abs(hka) > 8 || Math.abs(jlo) > 6) {
+                ligamentRisk = "High";
+            }
+
+            // Clinical considerations
+            const warnings = [];
+            const recommendations = [];
+
+            if (Math.abs(hka) > 6) {
+                warnings.push("Severe limb malalignment - consider hybrid approach");
+            }
+
+            if (Math.abs(jlo) > 5) {
+                warnings.push("Significant joint line obliquity - may require soft tissue releases");
+            }
+
+            if (age > 75) {
+                recommendations.push("Consider patient bone quality and activity level");
+            }
+
+            if (cpakType === 'VI' || cpakType === 'VIII') {
+                recommendations.push("Complex CPAK type - consider multidisciplinary planning");
+            }
+
+            // CPAK-specific recommendations
+            switch(cpakType) {
+                case 'I':
+                    recommendations.push("Ideal candidate for rKA - standard protocol applicable");
+                    break;
+                case 'II':
+                case 'III':
+                    recommendations.push("Monitor joint line obliquity during surgery");
+                    break;
+                case 'IV':
+                case 'VII':
+                    recommendations.push("Consider limb alignment impact on patellofemoral tracking");
+                    break;
+                case 'V':
+                case 'IX':
+                    recommendations.push("May require selective soft tissue releases");
+                    break;
+            }
+
+            return {
+                targetHKA,
+                targetLDFA,
+                targetMPTA,
+                feasibility,
+                femoralCutAngle,
+                tibialCutAngle,
+                femoralResection,
+                tibialResection,
+                ligamentRisk,
+                warnings,
+                recommendations
+            };
+        }
+
+        function displayResults(results) {
+            document.getElementById('targetHKA').textContent = `${results.targetHKA.toFixed(1)}°`;
+            document.getElementById('targetLDFA').textContent = `${results.targetLDFA.toFixed(1)}°`;
+            document.getElementById('targetMPTA').textContent = `${results.targetMPTA.toFixed(1)}°`;
+            document.getElementById('rkaFeasibility').textContent = results.feasibility;
+
+            document.getElementById('femoralCut').textContent = `${results.femoralCutAngle.toFixed(1)}°`;
+            document.getElementById('tibialCut').textContent = `${results.tibialCutAngle.toFixed(1)}°`;
+            document.getElementById('boneResection').textContent = `F: ${results.femoralResection.toFixed(1)}mm, T: ${results.tibialResection.toFixed(1)}mm`;
+            document.getElementById('ligamentRisk').textContent = results.ligamentRisk;
+
+            // Display warnings and recommendations
+            const warningsDiv = document.getElementById('clinicalWarnings');
+            const recommendationsDiv = document.getElementById('clinicalRecommendations');
+
+            warningsDiv.innerHTML = '';
+            recommendationsDiv.innerHTML = '';
+
+            results.warnings.forEach(warning => {
+                const div = document.createElement('div');
+                div.className = 'warning';
+                div.textContent = '⚠️ ' + warning;
+                warningsDiv.appendChild(div);
+            });
+
+            results.recommendations.forEach(rec => {
+                const div = document.createElement('div');
+                div.className = 'success';
+                div.textContent = '✅ ' + rec;
+                recommendationsDiv.appendChild(div);
+            });
+        }
+
+        // Auto-calculate CPAK when HKA or JLO changes
+        document.getElementById('hka').addEventListener('input', function() {
+            const hka = parseFloat(this.value) || 0;
+            const jlo = parseFloat(document.getElementById('jlo').value) || 0;
+            if (hka !== 0 || jlo !== 0) {
+                const cpakType = determineCPAKType(hka, jlo);
+                updateCPAKDisplay(cpakType);
+            }
+            // Update visualization if HKA is selected
+            if (document.getElementById('angleSelector').value === 'hka') {
+                highlightAngle();
+            }
+        });
+
+        document.getElementById('jlo').addEventListener('input', function() {
+            const hka = parseFloat(document.getElementById('hka').value) || 0;
+            const jlo = parseFloat(this.value) || 0;
+            if (hka !== 0 || jlo !== 0) {
+                const cpakType = determineCPAKType(hka, jlo);
+                updateCPAKDisplay(cpakType);
+            }
+            // Update visualization if JLO is selected
+            if (document.getElementById('angleSelector').value === 'jlo') {
+                highlightAngle();
+            }
+        });
+
+        // Update visualization when LDFA or MPTA changes
+        document.getElementById('ldfa').addEventListener('input', function() {
+            if (document.getElementById('angleSelector').value === 'ldfa') {
+                highlightAngle();
+            }
+        });
+
+        document.getElementById('mpta').addEventListener('input', function() {
+            if (document.getElementById('angleSelector').value === 'mpta') {
+                highlightAngle();
+            }
+        });
+    </script>
+</body>
+</html>
