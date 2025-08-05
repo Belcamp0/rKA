@@ -357,19 +357,7 @@
             <div class="card">
                 <h2>📊 Patient Data & Measurements</h2>
                 
-                <div class="input-group">
-                    <label for="patientAge">Patient Age (years)</label>
-                    <input type="number" id="patientAge" min="30" max="100" placeholder="65">
-                </div>
 
-                <div class="input-group">
-                    <label for="patientSex">Patient Sex</label>
-                    <select id="patientSex">
-                        <option value="">Select...</option>
-                        <option value="male">Male</option>
-                        <option value="female">Female</option>
-                    </select>
-                </div>
 
                 <div class="input-group">
                     <label for="hka">Hip-Knee-Ankle Angle (HKA) - degrees</label>
@@ -462,8 +450,24 @@
                         </circle>
                         <text x="220" y="55" font-size="12" fill="#4a5568">Hip</text>
                         
-                        <!-- Femur -->
-                        <line x1="200" y1="50" x2="195" y2="250" stroke="#4a5568" stroke-width="12" id="femur"/>
+                        <!-- Femur segments with angle-based coloring -->
+                        <defs>
+                            <linearGradient id="femurGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                                <stop offset="0%" style="stop-color:#4a5568;stop-opacity:1" />
+                                <stop offset="50%" style="stop-color:#f56565;stop-opacity:0.7" id="femurMidColor"/>
+                                <stop offset="100%" style="stop-color:#4a5568;stop-opacity:1" />
+                            </linearGradient>
+                            <linearGradient id="tibiaGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                                <stop offset="0%" style="stop-color:#4a5568;stop-opacity:1" />
+                                <stop offset="50%" style="stop-color:#4299e1;stop-opacity:0.7" id="tibiaMidColor"/>
+                                <stop offset="100%" style="stop-color:#4a5568;stop-opacity:1" />
+                            </linearGradient>
+                        </defs>
+                        
+                        <!-- Femur with LDFA angle coloring -->
+                        <line x1="200" y1="50" x2="195" y2="250" stroke="url(#femurGradient)" stroke-width="14" id="femur">
+                            <animate attributeName="stroke-width" values="14;16;14" dur="3s" repeatCount="indefinite"/>
+                        </line>
                         
                         <!-- Knee joint -->
                         <circle cx="195" cy="250" r="15" fill="#667eea" id="kneePoint">
@@ -471,8 +475,10 @@
                         </circle>
                         <text x="215" y="255" font-size="12" fill="#4a5568">Knee</text>
                         
-                        <!-- Tibia -->
-                        <line x1="195" y1="250" x2="190" y2="450" stroke="#4a5568" stroke-width="12" id="tibia"/>
+                        <!-- Tibia with MPTA angle coloring -->
+                        <line x1="195" y1="250" x2="190" y2="450" stroke="url(#tibiaGradient)" stroke-width="14" id="tibia">
+                            <animate attributeName="stroke-width" values="14;16;14" dur="3s" repeatCount="indefinite" begin="1s"/>
+                        </line>
                         
                         <!-- Ankle point -->
                         <circle cx="190" cy="450" r="8" fill="#8B5CF6" id="anklePoint">
@@ -480,43 +486,59 @@
                         </circle>
                         <text x="210" y="455" font-size="12" fill="#4a5568">Ankle</text>
                         
-                        <!-- Mechanical axis line (HKA) -->
-                        <line x1="200" y1="50" x2="190" y2="450" stroke="#e53e3e" stroke-width="2" stroke-dasharray="5,5" id="hkaLine" opacity="0"/>
+                        <!-- HKA Mechanical axis line with dynamic coloring -->
+                        <line x1="200" y1="50" x2="190" y2="450" stroke="#e53e3e" stroke-width="3" stroke-dasharray="8,4" id="hkaLine" opacity="0">
+                            <animate attributeName="stroke-dasharray" values="8,4;12,2;8,4" dur="2s" repeatCount="indefinite"/>
+                        </line>
                         
                         <!-- Femoral anatomical axis -->
-                        <line x1="200" y1="120" x2="195" y2="250" stroke="#38a169" stroke-width="2" id="femoralAxis" opacity="0"/>
+                        <line x1="200" y1="80" x2="195" y2="250" stroke="#38a169" stroke-width="3" id="femoralAxis" opacity="0"/>
                         
                         <!-- Tibial anatomical axis -->
-                        <line x1="195" y1="250" x2="190" y2="380" stroke="#3182ce" stroke-width="2" id="tibialAxis" opacity="0"/>
+                        <line x1="195" y1="250" x2="190" y2="420" stroke="#3182ce" stroke-width="3" id="tibialAxis" opacity="0"/>
                         
-                        <!-- Joint line -->
-                        <line x1="170" y1="250" x2="220" y2="250" stroke="#805ad5" stroke-width="3" id="jointLine" opacity="0"/>
+                        <!-- Joint line with dynamic highlighting -->
+                        <line x1="160" y1="250" x2="230" y2="250" stroke="#805ad5" stroke-width="4" id="jointLine" opacity="0">
+                            <animate attributeName="stroke-width" values="4;6;4" dur="2s" repeatCount="indefinite"/>
+                        </line>
                         
                         <!-- Reference lines for angles -->
-                        <!-- Vertical reference -->
-                        <line x1="195" y1="200" x2="195" y2="300" stroke="#gray" stroke-width="1" stroke-dasharray="2,2" id="verticalRef" opacity="0"/>
+                        <line x1="195" y1="180" x2="195" y2="320" stroke="#gray" stroke-width="1" stroke-dasharray="3,3" id="verticalRef" opacity="0"/>
+                        <line x1="130" y1="250" x2="260" y2="250" stroke="#gray" stroke-width="1" stroke-dasharray="3,3" id="horizontalRef" opacity="0"/>
                         
-                        <!-- Horizontal reference -->
-                        <line x1="145" y1="250" x2="245" y2="250" stroke="#gray" stroke-width="1" stroke-dasharray="2,2" id="horizontalRef" opacity="0"/>
+                        <!-- Enhanced LDFA angle visualization -->
+                        <path d="M 195 220 A 30 30 0 0 1 220 240" stroke="#f56565" stroke-width="3" fill="none" id="ldfaArc" opacity="0"/>
+                        <circle cx="207" cy="230" r="3" fill="#f56565" id="ldfaPoint" opacity="0"/>
+                        <text x="225" y="235" font-size="11" font-weight="bold" fill="#f56565" id="ldfaLabel" opacity="0">LDFA</text>
                         
-                        <!-- LDFA angle arc -->
-                        <path d="M 195 230 A 20 20 0 0 1 210 240" stroke="#f56565" stroke-width="2" fill="none" id="ldfaArc" opacity="0"/>
-                        <text x="215" y="235" font-size="10" fill="#f56565" id="ldfaLabel" opacity="0">LDFA</text>
+                        <!-- Enhanced MPTA angle visualization -->
+                        <path d="M 195 280 A 30 30 0 0 0 220 300" stroke="#4299e1" stroke-width="3" fill="none" id="mptaArc" opacity="0"/>
+                        <circle cx="207" cy="290" r="3" fill="#4299e1" id="mptaPoint" opacity="0"/>
+                        <text x="225" y="305" font-size="11" font-weight="bold" fill="#4299e1" id="mptaLabel" opacity="0">MPTA</text>
                         
-                        <!-- MPTA angle arc -->
-                        <path d="M 195 270 A 20 20 0 0 0 210 280" stroke="#4299e1" stroke-width="2" fill="none" id="mptaArc" opacity="0"/>
-                        <text x="215" y="285" font-size="10" fill="#4299e1" id="mptaLabel" opacity="0">MPTA</text>
+                        <!-- Enhanced JLO angle visualization -->
+                        <path d="M 160 235 A 40 40 0 0 1 230 235" stroke="#805ad5" stroke-width="3" fill="none" id="jloArc" opacity="0"/>
+                        <circle cx="195" cy="215" r="3" fill="#805ad5" id="jloPoint" opacity="0"/>
+                        <text x="195" y="210" font-size="11" font-weight="bold" fill="#805ad5" text-anchor="middle" id="jloLabel" opacity="0">JLO</text>
                         
-                        <!-- JLO angle indicator -->
-                        <path d="M 170 240 A 30 30 0 0 1 220 240" stroke="#805ad5" stroke-width="2" fill="none" id="jloArc" opacity="0"/>
-                        <text x="195" y="225" font-size="10" fill="#805ad5" text-anchor="middle" id="jloLabel" opacity="0">JLO</text>
+                        <!-- Enhanced HKA angle visualization -->
+                        <path d="M 185 90 A 60 60 0 0 1 170 140" stroke="#e53e3e" stroke-width="3" fill="none" id="hkaArc" opacity="0"/>
+                        <circle cx="177" cy="115" r="3" fill="#e53e3e" id="hkaPoint" opacity="0"/>
+                        <text x="140" y="125" font-size="11" font-weight="bold" fill="#e53e3e" id="hkaLabel" opacity="0">HKA</text>
                         
-                        <!-- HKA angle indicator -->
-                        <path d="M 195 100 A 50 50 0 0 1 185 140" stroke="#e53e3e" stroke-width="2" fill="none" id="hkaArc" opacity="0"/>
-                        <text x="150" y="125" font-size="10" fill="#e53e3e" id="hkaLabel" opacity="0">HKA</text>
+                        <!-- Angle sector fills for better visualization -->
+                        <path d="M 195 250 L 195 220 A 30 30 0 0 1 220 240 Z" fill="#f56565" fill-opacity="0.2" id="ldfaSector" opacity="0"/>
+                        <path d="M 195 250 L 195 280 A 30 30 0 0 0 220 300 Z" fill="#4299e1" fill-opacity="0.2" id="mptaSector" opacity="0"/>
+                        <path d="M 195 250 L 160 235 A 40 40 0 0 1 230 235 Z" fill="#805ad5" fill-opacity="0.15" id="jloSector" opacity="0"/>
+                        
+                        <!-- Dynamic angle value indicators on bones -->
+                        <text x="197" y="150" font-size="10" font-weight="bold" fill="#f56565" text-anchor="middle" id="femurAngleText" opacity="0">87°</text>
+                        <text x="192" y="350" font-size="10" font-weight="bold" fill="#4299e1" text-anchor="middle" id="tibiaAngleText" opacity="0">87°</text>
+                        <text x="195" y="100" font-size="10" font-weight="bold" fill="#e53e3e" text-anchor="middle" id="hkaAngleText" opacity="0">0°</text>
+                        <text x="195" y="270" font-size="10" font-weight="bold" fill="#805ad5" text-anchor="middle" id="jloAngleText" opacity="0">0°</text>
                         
                         <!-- Angle values display -->
-                        <rect x="10" y="500" width="380" height="90" fill="rgba(255,255,255,0.9)" stroke="#e2e8f0" stroke-width="1" rx="5" id="angleInfo" opacity="0"/>
+                        <rect x="10" y="500" width="380" height="90" fill="rgba(255,255,255,0.95)" stroke="#e2e8f0" stroke-width="1" rx="8" id="angleInfo" opacity="0"/>
                         <text x="20" y="520" font-size="14" font-weight="bold" fill="#4a5568" id="angleTitle">Angle Information</text>
                         <text x="20" y="540" font-size="12" fill="#666" id="angleDescription">Select an angle above to see details</text>
                         <text x="20" y="560" font-size="12" fill="#666" id="angleValue">Current value: --</text>
@@ -923,8 +945,6 @@
             const jlo = parseFloat(document.getElementById('jlo').value) || 0;
             const ldfa = parseFloat(document.getElementById('ldfa').value) || 87;
             const mpta = parseFloat(document.getElementById('mpta').value) || 87;
-            const age = parseInt(document.getElementById('patientAge').value) || 65;
-            const sex = document.getElementById('patientSex').value;
             const kneeSize = document.getElementById('kneeSize').value;
 
             // Determine CPAK type
@@ -932,14 +952,14 @@
             updateCPAKDisplay(cpakType);
 
             // rKA Calculations based on Vendittoli technique
-            const results = performRKACalculations(hka, jlo, ldfa, mpta, age, sex, cpakType);
+            const results = performRKACalculations(hka, jlo, ldfa, mpta, cpakType);
 
             // Display results
             displayResults(results);
             document.getElementById('resultsSection').classList.remove('hidden');
         }
 
-        function performRKACalculations(hka, jlo, ldfa, mpta, age, sex, cpakType) {
+        function performRKACalculations(hka, jlo, ldfa, mpta, cpakType) {
             const results = {};
 
             // rKA Target Calculations
@@ -1080,7 +1100,7 @@
             });
         }
 
-        // Auto-calculate CPAK when HKA or JLO changes
+        // Update visualization when input values change
         document.getElementById('hka').addEventListener('input', function() {
             const hka = parseFloat(this.value) || 0;
             const jlo = parseFloat(document.getElementById('jlo').value) || 0;
@@ -1090,7 +1110,8 @@
             }
             // Update visualization if HKA is selected
             if (document.getElementById('angleSelector').value === 'hka') {
-                highlightAngle();
+                updateBoneColors('hka', this.value);
+                document.getElementById('hkaAngleText').textContent = `${this.value}°`;
             }
         });
 
@@ -1103,20 +1124,23 @@
             }
             // Update visualization if JLO is selected
             if (document.getElementById('angleSelector').value === 'jlo') {
-                highlightAngle();
+                updateBoneColors('jlo', this.value);
+                document.getElementById('jloAngleText').textContent = `${this.value}°`;
             }
         });
 
         // Update visualization when LDFA or MPTA changes
         document.getElementById('ldfa').addEventListener('input', function() {
             if (document.getElementById('angleSelector').value === 'ldfa') {
-                highlightAngle();
+                updateBoneColors('ldfa', this.value);
+                document.getElementById('femurAngleText').textContent = `${this.value}°`;
             }
         });
 
         document.getElementById('mpta').addEventListener('input', function() {
             if (document.getElementById('angleSelector').value === 'mpta') {
-                highlightAngle();
+                updateBoneColors('mpta', this.value);
+                document.getElementById('tibiaAngleText').textContent = `${this.value}°`;
             }
         });
     </script>
